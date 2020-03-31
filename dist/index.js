@@ -19930,7 +19930,7 @@ try {
   console.log(`Commit hashes to cherry pick: ${hashesToCherryPick}`);
   //move commits
   const { execSync } = __webpack_require__(129);
-  execSync(`git fetch -all --prune --unshallow`)
+  execSync(`git fetch --all --prune --unshallow`)
   execSync(`git checkout ${branch} --track origin/${branch}`);
   execSync(`git branch ${updateBranch}`);
   execSync(`git checkout ${updateBranch}`);
