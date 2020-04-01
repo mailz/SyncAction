@@ -19948,29 +19948,29 @@ async function run() {
         repo: repository.name
       });
 
-      const currentPull = currentPulls.find(pull => {
-        return pull.head.ref === fromBranch && pull.base.ref === toBranch;
-      });
+    const currentPull = currentPulls.find(pull => {
+      return pull.head.ref === updateBranch && pull.base.ref === branch;
+    });
 
-      if (!currentPull) {
-        const { data: pullRequest } = await octokit.pulls.create({
+    if (!currentPull) {
+      const { data: pullRequest } = await octokit.pulls.create({
           owner: repository.owner.login,
           repo: repository.name,
-          head: fromBranch,
-          base: toBranch,
+          head: updateBranch,
+          base: branch,
           title: pullRequestTitle
             ? pullRequestTitle
-            : `sync: ${fromBranch} to ${branch}`,
+            : `sync: ${updateBranch} to ${branch}`,
           body: pullRequestBody
             ? pullRequestBody
-            : `Cherry picks commits from ${fromBranch}, to ${branch}!`
+            : `Cherry picks commits from ${updateBranch}, to ${branch}!`
         });
 
         console.log(`Pull request successful! You can view it here: ${pullRequest.url}.`);
 
-      } else {
-        console.log(
-          `There is already a pull request from ${fromBranch} to ${branch}.`,
+    } else {
+      console.log(
+          `There is already a pull request from ${updateBranch} to ${branch}.`,
           `You can view it here: ${currentPull.url}`
         );
       }
