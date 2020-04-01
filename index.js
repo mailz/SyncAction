@@ -1,14 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-// const checkError = (result) => {
-//   if (result != null || result > 0) {
-//     console.error(`exec error: ${result.error}`);
-//     console.error(`stderr: ${result.stderr}`);
-//     throw new Error(`exec error: ${result.error}`);
-//   }
-//   console.log(`stdout: ${result.stdout}`);
-// }
 
 try {
   const githubToken = core.getInput("GITHUB_TOKEN", { required: true });
@@ -30,25 +22,27 @@ try {
     }
   }
   
-  
-  
-  
   console.log(`Commit hashes to cherry pick: ${hashesToCherryPick}`);
   //move commits
   const { execSync } = require(`child_process`);
   //set user 
+  console.log(`update user to login: ${payload.pusher.name}, mail: ${payload.pusher.email}`);
   execSync(`git config --global user.email "${payload.pusher.email}"`)
   execSync(`git config --global user.name "${payload.pusher.name}"`)
 
-  execSync(`git fetch --prune --unshallow`)
-  execSync(`git checkout ${branch}`);
-  execSync(`git branch ${updateBranch}`);
-  execSync(`git checkout ${updateBranch}`);
+  console.log(`try fetch remote`);
+  console.log(execSync(`git fetch --prune --unshallow`))
+  console.log(`try checkout ${branch}`);
+  console.log(execSync(`git checkout ${branch}`));
+  console.log(`try create branch ${updateBranch}`);
+  console.log(execSync(`git branch ${updateBranch}`));
+  console.log(`try checkout branch ${updateBranch}`);
+  console.log(execSync(`git checkout ${updateBranch}`));
   console.log(execSync(`git status`));
   for (let i = 0; i < hashesToCherryPick.length; i++) {
-    execSync(`git cherry-pick ${hashesToCherryPick[i]}`);
+    console.log(execSync(`git cherry-pick ${hashesToCherryPick[i]}`));
   }
-  execSync(`git push -v -u origin refs/heads/${updateBranch}:refs/heads/${updateBranch}`);
+  console.log(execSync(`git push -v -u origin refs/heads/${updateBranch}:refs/heads/${updateBranch}`));
   //create PR
 
 } catch (error) {
