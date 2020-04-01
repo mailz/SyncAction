@@ -50,6 +50,9 @@ async function run() {
     }
     console.log(execSync(`git push -v -u origin refs/heads/${updateBranch}:refs/heads/${updateBranch}`));
     //create PR
+    const {
+      payload: { repository }
+    } = github.context;
     const octokit = new github.GitHub(githubToken);
     const { data: currentPulls } = await octokit.pulls.list({
         owner: repository.owner.name,
