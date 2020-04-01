@@ -19966,8 +19966,8 @@ async function run() {
           repo: repository.name,
           head: updateBranch,
           base: branch,
-          title: `sync: ${updateBranch} to ${branch}`,
-          body: `Cherry picks commits from ${updateBranch}, to ${branch}!`
+          title: `Sync PR: update ${branch} to ${fromBranch}`,
+          body: `Cherry picks commits from ${fromBranch}, to ${branch}!`
         });
 
         console.log(`Pull request successful! You can view it here: ${pullRequest.url}.`);
