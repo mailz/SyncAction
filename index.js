@@ -30,9 +30,16 @@ try {
     }
   }
   
+  
+  
+  
   console.log(`Commit hashes to cherry pick: ${hashesToCherryPick}`);
   //move commits
   const { execSync } = require(`child_process`);
+  //set user 
+  execSync(`git config --global user.email "${payload.pusher.email}"`)
+  execSync(`git config --global user.name "${payload.pusher.name}"`)
+
   execSync(`git fetch --prune --unshallow`)
   execSync(`git checkout ${branch}`);
   execSync(`git branch ${updateBranch}`);

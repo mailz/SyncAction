@@ -19927,9 +19927,16 @@ try {
     }
   }
   
+  
+  
+  
   console.log(`Commit hashes to cherry pick: ${hashesToCherryPick}`);
   //move commits
   const { execSync } = __webpack_require__(129);
+  //set user 
+  execSync(`git config --global user.email "${payload.pusher.email}"`)
+  execSync(`git config --global user.name "${payload.pusher.name}"`)
+
   execSync(`git fetch --prune --unshallow`)
   execSync(`git checkout ${branch}`);
   execSync(`git branch ${updateBranch}`);
