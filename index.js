@@ -24,6 +24,11 @@ async function run() {
     }
     
     console.log(`Commit hashes to cherry pick: ${hashesToCherryPick}`);
+
+    if (hashesToCherryPick.length == 0) {
+      console.log(`There is no any available commits`);
+      return;
+    }
     //move commits
     const { execSync } = require(`child_process`);
     //set user 
