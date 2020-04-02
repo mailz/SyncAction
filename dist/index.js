@@ -19907,8 +19907,8 @@ async function run() {
     const merged = payload.pull_request.merged;
     const repository = payload.repository;
 
-    console.log(`\npayload.pull_request: `+ JSON.stringify(payload.pull_request, undefined, 2));
-    console.log(`\npayload.repository: `+ JSON.stringify(payload.repository, undefined, 2));
+    // console.log(`\npayload.pull_request: `+ JSON.stringify(payload.pull_request, undefined, 2));
+    // console.log(`\npayload.repository: `+ JSON.stringify(payload.repository, undefined, 2));
 
     if (!merged) {
       console.log(`PR isn't merged. stop sync`);
