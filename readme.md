@@ -1,6 +1,6 @@
 # Sync Action
 
-GitHub Action which syncs branches with selected branch. 
+GitHub Action which moves commits from one branch to another branch
 
 ## Inputs
 
@@ -11,15 +11,6 @@ GitHub Action which syncs branches with selected branch.
 ### `BRANCH`
 
 **Required** Branch to make the pull-request against
-
-### `PR_TITLE`
-
-What you would like as the title of the pull request. Default: 'sync: {FROM_BRANCH} to {TO_BRANCH}'
-
-### `PR_BODY` 
-
-What you would like in the body of the pull request. Default: 'New code has just landed in {fromBranch} so let's bring {toBranch} up to speed!'
-
 
 ### Example usage
 ```javascript

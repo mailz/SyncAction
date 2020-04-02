@@ -1,5 +1,5 @@
 name: 'SyncAction'
-description: 'GitHub Action which syncs releases and develop branches'
+description: 'GitHub Action which moves commits from one branch to another branch'
 branding:
   icon: git-pull-request
   color: orange
