@@ -7,79 +7,66 @@ async function run() {
     const branch = core.getInput("BRANCH", { required: true });
 
     const payload = github.context.payload;
-    let commits = payload.commits;
-    const fromBranch = payload.ref
+    const merged = payload.pull_request.merged;
+    const repository = payload.repository;
 
-    console.log(`payload event: ${payload}`);
+    console.log(`\npayload.pull_request: `+ JSON.stringify(payload.pull_request, undefined, 2));
+    console.log(`\npayload.repository: `+ JSON.stringify(payload.repository, undefined, 2));
 
-    let updateBranch = `update/update_to_${payload.after}`;
-    console.log(`update branch is: ${updateBranch}`);
-    let hashesToCherryPick = []; 
-    for (let i = 0; i < commits.length; i++) {
-      let currentCommit = commits[i];
-      if (currentCommit.distinct == true) {
-         hashesToCherryPick.push(currentCommit.id);
-      }
-    }
-    
-    console.log(`Commit hashes to cherry pick: ${hashesToCherryPick}`);
-
-    if (hashesToCherryPick.length == 0) {
-      console.log(`There is no any available commits`);
+    if (!merged) {
+      console.log(`PR isn't merged. stop sync`);
       return;
     }
+    const head = payload.pull_request.head.sha;
+    const fromBranch = payload.pull_request.base.ref;
+
+    let updateBranch = `update/update_to_${head}`;
+    console.log(`update branch is: ${updateBranch}`);
+
     //move commits
-    // const { execSync } = require(`child_process`);
-    // //set user 
-    // console.log(`update user to login: ${payload.pusher.name}, mail: ${payload.pusher.email}`);
-    // execSync(`git config --global user.email "${payload.pusher.email}"`)
-    // execSync(`git config --global user.name "${payload.pusher.name}"`)
+    const { execSync } = require(`child_process`);
+    //set user 
+    console.log(`update user to login: ci@litres.ru, mail: ci_litres`);
+    execSync(`git config --global user.email "ci@litres.ru"`)
+    execSync(`git config --global user.name "ci_litres"`)
 
-    // console.log(`try fetch remote`);
-    // console.log(execSync(`git fetch --prune --unshallow`))
-    // console.log(`try checkout ${branch}`);
-    // console.log(execSync(`git checkout ${branch}`));
-    // console.log(`try create branch ${updateBranch}`);
-    // console.log(execSync(`git branch ${updateBranch}`));
-    // console.log(`try checkout branch ${updateBranch}`);
-    // console.log(execSync(`git checkout ${updateBranch}`));
-    // console.log(execSync(`git status`));
-    // for (let i = 0; i < hashesToCherryPick.length; i++) {
-    //   console.log(execSync(`git cherry-pick ${hashesToCherryPick[i]}`));
-    // }
-    // console.log(execSync(`git push -v -u origin refs/heads/${updateBranch}:refs/heads/${updateBranch}`));
+    console.log(`git update repository`)
+    // execSync(`git fetch --prune --unshallow`);
+    execSync(`git checkout ${head}`);
+    execSync(`git branch ${updateBranch}`);
+    execSync(`git checkout ${updateBranch}`);
+    console.log(execSync(`git status`));
+    console.log(`update remote branch: ${updateBranch}`);
+    execSync(`git push -v -u origin refs/heads/${updateBranch}:refs/heads/${updateBranch}`);
     // //create PR
-    // const {
-    //   payload: { repository }
-    // } = github.context;
-    // const octokit = new github.GitHub(githubToken);
-    // const { data: currentPulls } = await octokit.pulls.list({
-    //     owner: repository.owner.name,
-    //     repo: repository.name
-    //   });
+    const octokit = new github.GitHub(githubToken);
+    const { data: currentPulls } = await octokit.pulls.list({
+        owner: repository.owner.login,
+        repo: repository.name
+      });
 
-    // const currentPull = currentPulls.find(pull => {
-    //   return pull.head.ref === updateBranch && pull.base.ref === branch;
-    // });
+    const currentPull = currentPulls.find(pull => {
+      return pull.head.ref === updateBranch && pull.base.ref === branch;
+    });
 
-    // if (!currentPull) {
-    //   const { data: pullRequest } = await octokit.pulls.create({
-    //       owner: repository.owner.login,
-    //       repo: repository.name,
-    //       head: updateBranch,
-    //       base: branch,
-    //       title: `Sync PR: update ${branch} to ${fromBranch}`,
-    //       body: `Cherry picks commits from ${fromBranch} to ${branch}`
-    //     });
+    if (!currentPull) {
+      const { data: pullRequest } = await octokit.pulls.create({
+          owner: repository.owner.login,
+          repo: repository.name,
+          head: updateBranch,
+          base: branch,
+          title: `Sync PR: update ${branch} to ${fromBranch}`,
+          body: `Cherry picks commits from ${fromBranch} to ${branch}`
+        });
 
-    //     console.log(`Pull request successful! You can view it here: ${pullRequest.url}.`);
+        console.log(`Pull request successful! You can view it here: ${pullRequest.url}.`);
 
-    // } else {
-    //   console.log(
-    //       `There is already a pull request from ${updateBranch} to ${branch}.`,
-    //       `You can view it here: ${currentPull.url}`
-    //     );
-    //   }
+    } else {
+      console.log(
+          `There is already a pull request from ${updateBranch} to ${branch}.`,
+          `You can view it here: ${currentPull.url}`
+        );
+      }
   } catch (error) {
     core.setFailed(error.message);
   }
